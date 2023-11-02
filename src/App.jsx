@@ -1,11 +1,17 @@
-import { useState } from 'react'
-import './App.css'
+import Header from './components/header';
+import { Outlet } from 'react-router-dom';
+import './App.css';
+import Aside from './components/aside';
 
 function App() {
 
   return (
     <>
-      <h1>Initialization</h1>
+      <Header/>
+      <Aside/>
+      <main className='main'>
+        <Outlet/>
+      </main>
     </>
   )
 }

@@ -1,0 +1,104 @@
+html{
+  box-sizing: border-box;
+  font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+  margin: 0;
+}
+
+#root{
+  position: relative;
+}
+
+body{
+  margin: 0;
+  background-color: #ffe9fb;
+}
+
+a{
+  text-decoration: inherit;
+  color: inherit;
+}
+
+header{
+  display: flex;
+  flex-direction: row-reverse;
+  margin: 5px;
+}
+
+.start-menu{
+  list-style-type: none;
+  font-size: large;
+}
+
+.start-menu .link{
+  display: block;
+  width: fit-content;
+  transition: color ease-out 100ms;
+}
+
+.start-menu .link:hover{
+  color: rgba(0, 0, 0, 0.4);
+}
+
+.aside{
+  position: absolute;
+  top: 1rem;
+  left: 3rem;
+}
+
+.request-menu{
+  margin: auto;
+  width: 40rem;
+}
+
+input, textarea {
+  all: unset;
+  color: black;
+  background-color: white;
+  padding: 0.1em 0.3em;
+  width: 100%;
+}
+
+img {
+  pointer-events: none;
+}
+
+.request-menu {
+  color: white;
+  border: solid 0.5px black;
+  background-color: #17212B;
+  border-radius: 29.5px 29.5px 10px 10px;
+  padding: 2rem 5rem;
+}
+
+.param-item{
+  margin: 1rem auto;
+  width: 35rem;
+}
+
+.request-body{
+  margin: 0 auto;
+}
+
+.request-headers{
+  margin: 0 auto;
+}
+
+.submit-field{
+  width: fit-content;
+  margin-left: auto;
+}
+
+.field-name{
+  text-align: center;
+}
+
+.request-table {
+  border-spacing: 0px;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+.request-table td{
+  margin: 0;
+  border: solid 0.5px white;
+}
