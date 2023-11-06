@@ -13,10 +13,11 @@ function createWindow(){
     }
   });
 
+  win.setMenu(null);
   win.loadURL('http://localhost:5173/');
   // win.loadFile('dist/index.html');
 
-  win.webContents.openDevTools();
+  // win.webContents.openDevTools();
 
   app.on('window-all-closed', () => {
     if (process.platform !== 'darwin') {
