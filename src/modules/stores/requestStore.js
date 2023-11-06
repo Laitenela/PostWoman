@@ -10,6 +10,8 @@ export class RequestStore {
   authorization;
   headers = [];
   immutableHeaders = [];
+  abortController = new AbortController();
+  requestStatus = false;
   response = {};
   body = {};
 
@@ -27,7 +29,6 @@ export class RequestStore {
     
     this.someIds = data.someIds;
     this.response = new Response({});
-    console.log(this.response);
 
     this.headers = [];
     for (let param of data.headers) {
@@ -36,7 +37,6 @@ export class RequestStore {
 
     this.body = new Body(data.body);
     for(let key of Object.keys(data.body.params)){
-      this.body.setType(key);
       for(let param of data.body.params[key]){
         const newParam = new Param(param, this.someIds++);
         this.body.addParam(newParam);
@@ -44,6 +44,14 @@ export class RequestStore {
     }
     
     this.updateAuthorization();
+  }
+
+  setRequestStatus(bool){
+    this.requestStatus = bool;
+  }
+
+  updateAbortController(){
+    this.abortController = new AbortController();
   }
 
   setName(newValue){

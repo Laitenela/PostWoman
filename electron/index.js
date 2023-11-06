@@ -15,14 +15,13 @@ function createWindow(){
     titleBarOverlay: {
       color: '#ffe9fb',
       symbolColor: 'black',
-      top: 0,
-      left: 0,
+      height: 51,
     }
   });
 
   win.setMenu(null);
-  win.loadURL('http://localhost:5173/');
-  // win.loadFile('dist/index.html');
+  // win.loadURL('http://localhost:5173/');
+  win.loadFile('dist/index.html');
 
   win.webContents.openDevTools();
 

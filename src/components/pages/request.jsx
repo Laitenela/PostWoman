@@ -53,6 +53,12 @@ const RequestPage = observer(() => {
 
   const sendData = async (event) => {
     event.preventDefault();
+    if(requestStore.requestStatus){
+      requestStore.setRequestStatus(false);
+      requestStore.abortController.abort();
+      return;
+    }
+
     const data = requestStore.getData();
     const requestOptions = {};
     const requestHeaders = {};
@@ -81,18 +87,32 @@ const RequestPage = observer(() => {
       requestBody = data.body.raws.json;
     }
 
-
     requestOptions.method = data.method;
     requestOptions.url = data.url;
     requestOptions.headers = requestHeaders;
     requestOptions.data = requestBody;
     requestOptions.transformResponse = (data) => data;
+    requestStore.updateAbortController();
+    requestOptions.signal = requestStore.abortController.signal;
 
-    console.log(requestOptions);
+    const form = event.target;
+    const button = form.querySelector('.button');
+    button.innerHTML = "Отменить взлом";
+    requestStore.setRequestStatus(true);
 
-    const response = await axios(requestOptions);
-    console.log(response.data.length);
-    requestStore.setResponse(response);
+    try{
+      const response = await axios(requestOptions);
+      requestStore.setResponse(response);
+    } catch (err) {
+      console.log(err);
+      const response = err.response;
+      const errorResponse = {data: `Code: ${err.code}.\nMessage: ${err.message}.\n\nHas response: ${Boolean(err.response)}\nCode: ${response?.status}\nStatusText: ${response?.statusText}\nData: ${response?.data}`}
+      requestStore.setResponse(errorResponse);
+    }
+
+    requestStore.setRequestStatus(false);
+    button.innerHTML = "Взломать жёпу";
+
     // const element = document.getElementById('response-body');
     // navigator.clipboard.writeText(response.data);
     // var dlAnchorElem = document.getElementById('downloadAnchorElem');
