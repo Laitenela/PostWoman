@@ -200,6 +200,7 @@ export class RequestStore {
 class Response {
   headers = [];
   body = "";
+  mainData = "";
   constructor({headers = [], data = ""}){
     for(let key of Object.keys(headers)){
       this.headers.push({
@@ -207,7 +208,8 @@ class Response {
         value: headers[key], 
       });
     }
-    this.body = data;
+    this.body = data.slice(0, 1000);
+    this.mainData = data;
   }
 }
 

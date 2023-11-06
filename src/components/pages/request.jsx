@@ -91,8 +91,15 @@ const RequestPage = observer(() => {
     console.log(requestOptions);
 
     const response = await axios(requestOptions);
-    console.log('hereherehere');
+    console.log(response.data.length);
     requestStore.setResponse(response);
+    // const element = document.getElementById('response-body');
+    // navigator.clipboard.writeText(response.data);
+    // var dlAnchorElem = document.getElementById('downloadAnchorElem');
+    // dlAnchorElem.setAttribute("href", response.data);
+    // dlAnchorElem.setAttribute("download", "response.json");
+    // dlAnchorElem.click();
+    // element.innerHTML = response.data.slice(0, 1000);
   }
 
   const saveToCollection = () => {
@@ -103,6 +110,13 @@ const RequestPage = observer(() => {
   const saveThis = () => {
     const newId = requestStore.saveThis();
     window.location = `/soloRequest/${newId}`;
+  }
+
+  const setResponseToClipboard = (event) => {
+    const selectionText = document.getSelection().toString();
+    if(selectionText.length !== requestStore.response.body.length) return;
+    event.preventDefault();
+    navigator.clipboard.writeText(requestStore.response.mainData);
   }
 
   return (
@@ -127,7 +141,7 @@ const RequestPage = observer(() => {
     
     <div className="response-menu">
       <RequestBlockContainer className="request-headers" title="BODY">
-        <textarea className="json-body" value={requestStore.response.body} />
+        <textarea onCopy={(event) => setResponseToClipboard(event)} value={requestStore.response.body} id="response-body" className="json-body" />
       </RequestBlockContainer>
       <RequestBlockContainer className="request-headers" title="HEADERS">
           <ResponseKeysTable paramRows={requestStore.response.headers}/>

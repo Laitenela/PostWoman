@@ -53,6 +53,7 @@ body::-webkit-scrollbar-thumb {
 
 body{
   margin: 0;
+  margin-top: 10px;
   background-color: #ffe9fb;
 }
 
@@ -91,11 +92,12 @@ header{
 .request-menu{
   margin: auto;
   position: relative;
-  width: 45rem;
+  width: 50rem;
   color: white;
   border: solid 0.5px black;
   background-color: #17212B;
-  border-radius: 2rem 2rem 0.5rem 0.5rem;
+  border-radius: 1rem 1rem 0.5rem 0.5rem;
+  box-shadow: 0px 0px 8px #17212B;
   padding: 2rem 5rem;
 }
 
@@ -206,12 +208,13 @@ textarea{
 
 .response-menu{
   margin: auto;
-  width: 45rem;
+  width: 50rem;
   color: white;
   border: solid 0.5px black;
   background-color: #17212B;
-  border-radius: 0.5rem 0.5rem 2rem 2rem;
-  margin-top: 1rem;
+  border-radius: 0.5rem 0.5rem 1rem 1rem;
+  margin-top: 0.5rem;
+  margin-bottom: 2rem;
   padding: 2rem 5rem;
 }
 
@@ -274,7 +277,7 @@ textarea{
   color: #EDEDED;
   position: relative;
   border-bottom: solid 0.5px black;
-  font-size: 1.1rem;
+  font-size: 0.9rem;
   font-weight: 100;
   padding: 5px;
   transition: color ease-out 150ms;
