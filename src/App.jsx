@@ -1,19 +1,21 @@
 import Header from './components/header';
-import { Outlet } from 'react-router-dom';
-import './App.css';
+import { Outlet, useLoaderData } from 'react-router-dom';
 import Aside from './components/aside';
+import { observer } from 'mobx-react-lite';
+import './App.css';
 
-function App() {
-
+const App = observer(() => {
+  const dataStore = useLoaderData();
+  console.log(dataStore);
   return (
     <>
       <Header/>
-      <Aside/>
+      <Aside requests={dataStore.requests} removeRequest={(id) => dataStore.removeRequest(id)} />
       <main className='main'>
         <Outlet/>
       </main>
     </>
   )
-}
+});
 
 export default App

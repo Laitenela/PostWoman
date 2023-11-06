@@ -1,7 +1,50 @@
+
+
 html{
-  box-sizing: border-box;
   font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
   margin: 0;
+}
+
+*::after{
+  font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+}
+
+*::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+
+button{
+  font-style: inherit;
+}
+
+*::-webkit-scrollbar-track {
+  background-color: #17212B;
+  border-radius: 100px 100px 0 0 ;
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: #2d3033;
+  border-radius: 10px;
+}
+
+body::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+
+body::-webkit-scrollbar-track {
+  background-color: #ffe9fb;
+  border-radius: 100px;
+}
+
+body::-webkit-scrollbar-thumb {
+  background-image: linear-gradient(180deg, #f09bc9 0%, #a1b1dd 99%) !important;
+  border-radius: 100px;
+}
+
+*::-webkit-resizer {
+  background: #17212B;
 }
 
 #root{
@@ -47,13 +90,20 @@ header{
 
 .request-menu{
   margin: auto;
-  width: 40rem;
+  position: relative;
+  width: 45rem;
+  color: white;
+  border: solid 0.5px black;
+  background-color: #17212B;
+  border-radius: 2rem 2rem 0.5rem 0.5rem;
+  padding: 2rem 5rem;
 }
 
-input, textarea {
+input[type="text"]{
   all: unset;
   color: black;
   background-color: white;
+  box-sizing: border-box;
   padding: 0.1em 0.3em;
   width: 100%;
 }
@@ -62,17 +112,15 @@ img {
   pointer-events: none;
 }
 
-.request-menu {
-  color: white;
-  border: solid 0.5px black;
-  background-color: #17212B;
-  border-radius: 29.5px 29.5px 10px 10px;
-  padding: 2rem 5rem;
-}
-
 .param-item{
+  display: flex;
   margin: 1rem auto;
   width: 35rem;
+}
+
+.param-item>div{
+  text-align: center;
+  flex-grow: 1;
 }
 
 .request-body{
@@ -85,6 +133,7 @@ img {
 
 .submit-field{
   width: fit-content;
+  margin-top: 3rem;
   margin-left: auto;
 }
 
@@ -100,5 +149,165 @@ img {
 
 .request-table td{
   margin: 0;
-  border: solid 0.5px white;
+  border: solid 1px rgb(133, 133, 133);
+}
+
+th{
+  text-align: left;
+  padding-left: 0.3rem;
+  color: rgb(133, 133, 133);
+  border: solid 1px rgb(133, 133, 133);
+  /* font-weight: 500; */
+}
+
+.request-table input{
+  color: white;
+  background-color: #17212B;
+}
+
+.request-table>tbody>tr>td:nth-child(1){
+  width: 1rem;
+}
+
+.keys-row{
+  position: relative;
+}
+
+.keys-row:hover .remove-button{
+  opacity: 1;
+}
+
+.remove-button{
+  opacity: 0;
+  position: absolute;
+  font-size: 0.8rem;
+  top: 0.15rem;
+  right: 0.2rem;
+  padding: 0.1rem;
+  border-radius: 0.2rem;
+}
+
+.remove-button:hover{
+  cursor: pointer;
+  background-color: #2d3033;
+}
+
+.json-body{
+  min-width: 100%;
+  max-width: 100%;
+  min-height: 10rem;
+}
+
+textarea{
+  color: white;
+  background-color: #17212B;
+  text-wrap: nowrap;
+}
+
+.response-menu{
+  margin: auto;
+  width: 45rem;
+  color: white;
+  border: solid 0.5px black;
+  background-color: #17212B;
+  border-radius: 0.5rem 0.5rem 2rem 2rem;
+  margin-top: 1rem;
+  padding: 2rem 5rem;
+}
+
+.request-menu__title{
+  text-align: center;
+}
+
+.button{
+  background-color: #17212B;
+  color: white;
+  border-radius: 0.3rem;
+}
+
+.request-menu .save-button{
+  opacity: 0;
+}
+
+.request-menu .save-button:nth-child(1){
+  top: 1rem;
+  left: 2rem;
+}
+
+.request-menu .save-button:nth-child(2){
+  top: 1rem;
+  left: 3rem;
+}
+
+.request-menu:hover>.save-button{
+  opacity: 1;
+}
+
+.param-item input{
+  background-color: #17212B;
+  color: white;
+  border: solid 1px rgb(133, 133, 133);
+  border-color: rgb(133, 133, 133);
+  /* border-color: -internal-light-dark(rgb(118, 118, 118), rgb(133, 133, 133)); */
+}
+
+.side-menu {
+  position:fixed;
+  display: flex;
+  flex-direction: column;
+  top:0;
+  left: -180px;
+  background-color: #17212B;
+  height: 100vh;
+  width: 190px;
+  transition: ease-in-out 200ms;
+  transition-delay: 50ms;
+  border-right: solid 0.1px black;
+  z-index: 10;
+}
+
+.side-menu:hover{
+  left: 0px;
+}
+
+.side-menu__button {
+  color: #EDEDED;
+  position: relative;
+  border-bottom: solid 0.5px black;
+  font-size: 1.1rem;
+  font-weight: 100;
+  padding: 5px;
+  transition: color ease-out 150ms;
+  transition: background-color ease-out 150ms;
+}
+
+.side-menu__button:hover {
+  background-color: #273441;
+  color: #a1b1dd;
+}
+
+.side-menu__button:hover .side-menu__remove-button{
+  opacity: 1;
+}
+
+.side-menu__remove-button{
+  opacity: 0;
+  position: absolute;
+  font-size: 0.8rem;
+  top: 0.3rem;
+  right: 0.2rem;
+  padding: 0.1rem;
+  border-radius: 0.2rem;
+  transition: background-color ease-out 100ms;
+  transition: opacity ease-out 200ms;
+}
+
+.side-menu__remove-button:hover{
+  cursor: pointer;
+  background-color: #2d3033;
+}
+
+*:focus,
+input:focus{
+  outline: solid 1px rgb(85, 85, 85);
 }

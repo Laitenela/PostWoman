@@ -1,19 +1,19 @@
+import { observer } from "mobx-react-lite";
 import { Link } from "react-router-dom";
 
-function Aside(){
+const Aside = observer(({ requests, removeRequest }) => {
   return (
-    <aside className="aside">
-      <div className="start-menu">
-        <li className="link">
-          <Link to="/">Одиночные запросы</Link>
-        </li>
-        <li className="link">
-          <Link to="/chain">Цепочки запросов</Link>
-        </li>
-        <li></li>
-      </div>
+    <aside className="side-menu">
+      {requests.map(({ name, id }) => (
+        <div key={id} className="side-menu__button">
+          <Link to={`/soloRequest/${id}`}>
+            <div>{name}</div>
+          </Link>
+          <div className="side-menu__remove-button" onClick={() => removeRequest(id)}>🗑️</div>
+        </div>
+      ))}
     </aside>
-  )
-}
+  );
+})
 
 export default Aside;
