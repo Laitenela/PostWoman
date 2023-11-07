@@ -71,26 +71,11 @@ routeLoader.soloRequest = ({ params }) => {
       type: "json",
       params: {
         "x-www-form-urlencoded": [
-          {
-            key: 'test',
-            value: 'test',
-            description: 'test'
-          },
-          {
-            key: 'test',
-            value: 'test',
-            description: 'test'
-          },
-          {
-            key: 'test',
-            value: 'test',
-            description: 'test'
-          },
         ],
         "json": []
       },
       raws: {
-        "json": "хуй",
+        "json": "",
       }
     }
   }

@@ -2,9 +2,9 @@ import { makeAutoObservable, toJS } from "mobx";
 import { v4 as uuidv4 } from 'uuid';
 
 export class RequestStore {
+  some = 0;
   id = "";
   name = "";
-  someIds = 0;
   url = "";
   method = "GET";
   authorization;
@@ -18,7 +18,6 @@ export class RequestStore {
   constructor(data) {
     makeAutoObservable(this);
     if (!data) return;
-
     this.url = data.url;
     this.name = data.name;
     this.method = data.method;
@@ -65,6 +64,7 @@ export class RequestStore {
     data.requests.at(-1).id = newId;
     data.requests.at(-1).response = {};
     localStorage.setItem('data', JSON.stringify(data));
+    this.id = newId;
     return newId;
   }
 

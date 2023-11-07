@@ -19,8 +19,12 @@ export class DataStore {
 
   removeRequest(requestId){
     const index = this.#findPosition(requestId);
-    console.log('ere', index);
     this.requests.splice(index, 1);
     localStorage.setItem('data', JSON.stringify(toJS(this)));
+  }
+
+  pushNew(request){
+    console.log(request);
+    this.requests.push(request);
   }
 }

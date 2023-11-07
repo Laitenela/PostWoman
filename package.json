@@ -1,13 +1,13 @@
 {
   "name": "postwoman",
   "private": true,
-  "version": "0.0.0",
+  "version": "0.0.7",
   "main": "./electron/index.js",
   "scripts": {
     "dev": "vite",
     "start": "electron .",
     "build": "vite build",
-    "build-electron": "",
+    "build-electron": "electron-packager . --overwrite --icon \"./public/gubi.ico\"",
     "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview"
   },

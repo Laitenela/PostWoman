@@ -1,5 +1,5 @@
 import { observer } from "mobx-react-lite";
-import { redirect, useLoaderData } from "react-router-dom";
+import { useLoaderData, useNavigate, useOutletContext } from "react-router-dom";
 import TextInput from "../micro/textInput";
 import RequestBlockContainer from "../containers/requestBlockContainer/requestBlockContainer";
 import KeysTable from "../containers/keysTable/keysTable";
@@ -9,7 +9,9 @@ import BodyForm from "../containers/formFields/bodyForm";
 import ResponseKeysTable from "../containers/reponseKeysTable";
 
 const RequestPage = observer(() => {
+  const dataStore = useOutletContext();
   const requestStore = useLoaderData();
+  const navigate = useNavigate();
 
   const nameProps = {};
   nameProps.id = "requestName";
@@ -124,12 +126,14 @@ const RequestPage = observer(() => {
 
   const saveToCollection = () => {
     const newId = requestStore.saveAsNew();
-    window.location = `/soloRequest/${newId}`;
+    console.log(dataStore);
+    dataStore.pushNew(requestStore.getData());
+    navigate(`/soloRequest/${newId}`);
   }
 
   const saveThis = () => {
     const newId = requestStore.saveThis();
-    window.location = `/soloRequest/${newId}`;
+    navigate(`/soloRequest/${newId}`);
   }
 
   const setResponseToClipboard = (event) => {

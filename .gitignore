@@ -12,6 +12,8 @@ dist
 dist-ssr
 *.local
 
+postwoman-win32-x64
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
