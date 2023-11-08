@@ -1,5 +1,6 @@
 import { DataStore } from "../stores/dataStore";
 import { RequestStore } from "../stores/requestStore";
+import { SnippetsStore } from "../stores/snippetsStore";
 
 export const routeLoader = {};
 
@@ -13,15 +14,20 @@ const getPosition = (requestsArray, id) => {
 }
 
 routeLoader.app = ({ params }) => {
-  console.log('хуй');
   if(!localStorage.getItem('data')){
-    localStorage.setItem('data', JSON.stringify({requests: []}));
+    localStorage.setItem('data', JSON.stringify({requests: [], groups: []}));
   }
   
   const dataStore = new DataStore(JSON.parse(localStorage.getItem('data')));
 
   return dataStore;
 };
+
+routeLoader.snippets = ({ params }) => {
+  const data = JSON.parse(localStorage.getItem('data'));
+  const snippetsStore = new SnippetsStore(data);
+  return snippetsStore;
+}
 
 routeLoader.soloRequest = ({ params }) => {
   const data = JSON.parse(localStorage.getItem('data'));

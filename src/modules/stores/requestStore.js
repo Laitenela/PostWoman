@@ -1,5 +1,7 @@
 import { makeAutoObservable, toJS } from "mobx";
+import { Snip } from "./snippetsStore";
 import { v4 as uuidv4 } from 'uuid';
+import { DataStore } from "./dataStore";
 
 export class RequestStore {
   some = 0;
@@ -7,6 +9,7 @@ export class RequestStore {
   name = "";
   url = "";
   method = "GET";
+  groupId;
   authorization;
   headers = [];
   immutableHeaders = [];
@@ -22,6 +25,10 @@ export class RequestStore {
     this.name = data.name;
     this.method = data.method;
     this.authorization = new Authorizaton(data.authorization, this);
+
+    if(!data.groupId) this.groupId = DataStore.getOrCreateGroup();
+    else this.groupId = data.groupId;
+    // else this.groupId = data.groupId;
 
     if(!data.id) this.id = uuidv4();
     else this.id = data.id;
@@ -41,8 +48,12 @@ export class RequestStore {
         this.body.addParam(newParam);
       }
     }
-    
+    console.log(this);
     this.updateAuthorization();
+  }
+
+  setGroupId(newGroupId){
+    this.groupId = newGroupId;
   }
 
   setRequestStatus(bool){
@@ -55,6 +66,12 @@ export class RequestStore {
 
   setName(newValue){
     this.name = newValue;
+  }
+
+  getSnips(){
+    const jsonData = JSON.stringify(this.getUsefulData());
+    console.log(Snip.findSnips(jsonData));
+    return Object.entries(Snip.findSnips(jsonData)).map((items) => `${items[0]}: ${items[1] ? items[1] : items[0]}`).join('\n');
   }
 
   saveAsNew(){
@@ -70,6 +87,34 @@ export class RequestStore {
 
   getData(){
     return toJS(this);
+  }
+
+  getUsefulData(){
+    const data = toJS(this);
+
+    for(let key of Object.keys(data.authorization.params)){
+      if(key === data.authorization.type) continue;
+      delete data.authorization.params[key];
+    }
+
+    for(let key of Object.keys(data.body.params)){
+      if(key === data.body.type) continue;
+      delete data.body.params[key];
+    }
+
+    for(let key of Object.keys(data.body.raws)){
+      if(key === data.body.type) continue;
+      delete data.body.raws[key];
+    }
+
+    for(let i = 0; i < data.headers.length; i++){
+      if(data.headers[i].enabled) continue;
+      data.headers.splice(i--, 1);
+    }
+
+    delete data['response'];
+
+    return data;
   }
 
   getHeadersIndex(paramId){
@@ -175,8 +220,12 @@ export class RequestStore {
       if(this.authorization.type === "basic-auth"){
         const login = this.authorization.params['basic-auth'].login;
         const password = this.authorization.params['basic-auth'].password;
-        const baseValue = btoa(`${login}:${password}`);
-        authorization.value = `Basic ${baseValue}`;
+        try{
+          const baseValue = btoa(`${login}:${password}`);
+          authorization.value = `Basic ${baseValue}`;
+        } catch {
+          authorization.value = ``;
+        }
       }
 
       if(this.authorization.type !== "no-auth"){
@@ -205,7 +254,7 @@ export class RequestStore {
   }
 }
 
-class Response {
+export class Response {
   headers = [];
   body = "";
   mainData = "";

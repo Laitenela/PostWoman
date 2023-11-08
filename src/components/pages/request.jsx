@@ -148,10 +148,18 @@ const RequestPage = observer(() => {
     <div className="request-menu">
       <button onClick={() => saveThis()} className="save-button button">Сохранить</button>
       <button onClick={() => saveToCollection()} className="save-button button">Сохранить как новый</button>
+      <div className="snippet-select param-item">
+        <select value={requestStore.groupId} onChange={(event) => requestStore.setGroupId(event.target.value)} className="snippet-select__selector" name="snippet" id="snippet-select">
+          {dataStore.groups.map(group => {
+            return <option value={group.id} key={group.id}>{group.name}</option>
+          })}
+        </select>
+      </div>
       <TextInput {...nameProps} />
       <form onSubmit={sendData}>
         <TextInput {...methodProps} />
         <TextInput {...urlProps} />
+        <h2 style={{textAlign: "center", display: "block", position: "absolute", top: '0', right: '-12rem'}} className="param-item">Request</h2>
         <AuthorizationForm authorization={requestStore.authorization}/>
         <RequestBlockContainer className="request-headers" title="HEADERS">
           <KeysTable immutableParams={requestStore.immutableHeaders} removeParam={(param) => requestStore.removeParam('header', param)} addParam={(type, value) => addParam('headers', type, value)} paramRows={requestStore.headers}/>
@@ -164,6 +172,10 @@ const RequestPage = observer(() => {
     </div>
     
     <div className="response-menu">
+      <h2 style={{textAlign: "center", display: "block", position: "absolute", top: '0', right: '-12rem'}} className="param-item">Response</h2>
+      <RequestBlockContainer className="request-headers" title="SNIPPETS">
+        <textarea onCopy={(event) => setResponseToClipboard(event)} value={requestStore.getSnips()} id="response-body" className="json-body" />
+      </RequestBlockContainer>
       <RequestBlockContainer className="request-headers" title="BODY">
         <textarea onCopy={(event) => setResponseToClipboard(event)} value={requestStore.response.body} id="response-body" className="json-body" />
       </RequestBlockContainer>

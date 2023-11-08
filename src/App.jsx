@@ -8,8 +8,8 @@ const App = () => {
 
   return (
     <>
-      <Header/>
-      <Aside requests={dataStore.requests} removeRequest={(id) => dataStore.removeRequest(id)} />
+      <Header dataStore={dataStore}/>
+      <Aside dataStore={dataStore} requests={dataStore.requests} removeRequest={(id) => dataStore.removeRequest(id)} />
       <main className='main'>
         <Outlet context={dataStore}/>
       </main>

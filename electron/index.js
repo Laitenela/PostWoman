@@ -23,7 +23,7 @@ function createWindow(){
   win.loadURL('http://localhost:5173/');
   // win.loadFile('dist/index.html');
 
-  // win.webContents.openDevTools();
+  win.webContents.openDevTools();
 
   win.webContents.session.on('will-download', (event, item, webContents) => {
     // Set the save path, making Electron not to prompt a save dialog.
