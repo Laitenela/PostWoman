@@ -9,6 +9,7 @@ export class RequestStore {
   name = "";
   url = "";
   method = "GET";
+  type = 'request';
   groupId;
   authorization;
   headers = [];
@@ -76,10 +77,11 @@ export class RequestStore {
 
   saveAsNew(){
     const data = JSON.parse(localStorage.getItem('data'));
-    data.requests.push(toJS(this));
+    const inner = toJS(this);
     const newId = uuidv4();
-    data.requests.at(-1).id = newId;
-    data.requests.at(-1).response = {};
+    inner.response = {};
+    inner.id = newId;
+    data.requests.push(inner);
     localStorage.setItem('data', JSON.stringify(data));
     this.id = newId;
     return newId;
@@ -180,8 +182,10 @@ export class RequestStore {
   saveThis(){
     const data = JSON.parse(localStorage.getItem('data'));
     const index = this.#findIdPosition(data.requests, this.id);
-    if(index === -1) data.requests.push(toJS(this));
-    else data.requests[index] = toJS(this);
+    const innerData = toJS(this);
+    innerData.response = {};
+    if(index === -1) data.requests.push(innerData);
+    else data.requests[index] = innerData;
     localStorage.setItem('data', JSON.stringify(data));
     return this.id;
   }
@@ -377,5 +381,4 @@ export class Param {
   changeDescription(description){
     this.description = description;
   }
-
 }

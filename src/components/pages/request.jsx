@@ -61,12 +61,17 @@ const RequestPage = observer(() => {
       return;
     }
 
+    // const content = "File content to save";
+    // const element = document.createElement("a");
+    // const file = new Blob([content], {type: "text/plain"});
+    // element.href = URL.createObjectURL(file);
+    // element.download = "file.txt";
+    // element.click();
+
     const data = requestStore.getData();
     const requestOptions = {};
     const requestHeaders = {};
     let requestBody;
-
-    console.log(data);
 
     for(let item of data.headers){
       if(!item.enabled) continue;
@@ -99,7 +104,7 @@ const RequestPage = observer(() => {
 
     const form = event.target;
     const button = form.querySelector('.button');
-    button.innerHTML = "Отменить взлом";
+    button.innerHTML = "Отменить";
     requestStore.setRequestStatus(true);
 
     try{
@@ -113,7 +118,7 @@ const RequestPage = observer(() => {
     }
 
     requestStore.setRequestStatus(false);
-    button.innerHTML = "Взломать жёпу";
+    button.innerHTML = "Отправить";
 
     // const element = document.getElementById('response-body');
     // navigator.clipboard.writeText(response.data);
@@ -125,15 +130,22 @@ const RequestPage = observer(() => {
   }
 
   const saveToCollection = () => {
+    if(!requestStore.name) return;
+    if(!requestStore.groupId) return;
     const newId = requestStore.saveAsNew();
-    console.log(dataStore);
     dataStore.pushNew(requestStore.getData());
     navigate(`/soloRequest/${newId}`);
   }
 
   const saveThis = () => {
+    if(!requestStore.name) return;
+    if(!requestStore.groupId) return;
     const newId = requestStore.saveThis();
     navigate(`/soloRequest/${newId}`);
+  }
+
+  const setAllToClipboard = () => {
+    navigator.clipboard.writeText(requestStore.response.mainData);
   }
 
   const setResponseToClipboard = (event) => {
@@ -166,7 +178,7 @@ const RequestPage = observer(() => {
         </RequestBlockContainer>
         <BodyForm body={requestStore.body} addParam={addParam}/>
         <div className="submit-field">
-          <button className="button" type="submit">Взломать жёпу</button>
+          <button className="button" type="submit">Отправить</button>
         </div>
       </form>
     </div>
@@ -174,9 +186,10 @@ const RequestPage = observer(() => {
     <div className="response-menu">
       <h2 style={{textAlign: "center", display: "block", position: "absolute", top: '0', right: '-12rem'}} className="param-item">Response</h2>
       <RequestBlockContainer className="request-headers" title="SNIPPETS">
-        <textarea onCopy={(event) => setResponseToClipboard(event)} value={requestStore.getSnips()} id="response-body" className="json-body" />
+        <textarea onCopy={(event) => setResponseToClipboard(event)} value={requestStore.getSnips()} id="snippets-body" className="json-body" />
       </RequestBlockContainer>
       <RequestBlockContainer className="request-headers" title="BODY">
+        <button onClick={() => setAllToClipboard()} className="textarea-copy-button button">Copy all</button>
         <textarea onCopy={(event) => setResponseToClipboard(event)} value={requestStore.response.body} id="response-body" className="json-body" />
       </RequestBlockContainer>
       <RequestBlockContainer className="request-headers" title="HEADERS">

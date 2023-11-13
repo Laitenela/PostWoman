@@ -3,6 +3,7 @@ import App from "../../App";
 import RequestPage from "../../components/pages/request";
 import { routeLoader } from "../loaders/loaders";
 import Snippets from "../../components/pages/snippets";
+import Chain from "../../components/pages/chain";
 
 const router = createHashRouter([
   {
@@ -24,6 +25,16 @@ const router = createHashRouter([
         path: "/snippets",
         element: <Snippets />,
         loader: routeLoader.snippets
+      },
+      {
+        path: "/chain",
+        element: <Chain/>,
+        loader: routeLoader.chain
+      },
+      {
+        path: "/chain/:id",
+        element: <Chain/>,
+        loader: routeLoader.chain
       }
     ]
   }

@@ -1,3 +1,4 @@
+import { ChainsStore } from "../stores/chainStore";
 import { DataStore } from "../stores/dataStore";
 import { RequestStore } from "../stores/requestStore";
 import { SnippetsStore } from "../stores/snippetsStore";
@@ -29,13 +30,22 @@ routeLoader.snippets = ({ params }) => {
   return snippetsStore;
 }
 
+routeLoader.chain = ({ params }) => {
+  console.log(params.id);
+  const data = JSON.parse(localStorage.getItem('data'));
+  const position = getPosition(data.requests, params.id);
+  console.log(data.requests[position]);
+  if(position === -1) return new ChainsStore(data);
+  else return new ChainsStore(data.requests[position]);
+}
+
 routeLoader.soloRequest = ({ params }) => {
   const data = JSON.parse(localStorage.getItem('data'));
   const testData = {
     name: "",
     someIds: 0,
-    url: "https://vk.com/",
-    method: "post",
+    url: "",
+    method: "",
     authorization: {
       type: "bearer-auth",
       params: {

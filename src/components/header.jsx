@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, redirect } from "react-router-dom";
 import RequestBlockContainer from "./containers/requestBlockContainer/requestBlockContainer";
 import TextInput from "./micro/textInput";
 
@@ -31,6 +31,21 @@ function Header({ dataStore }) {
   // groupProps.value = requestStore.method;
   groupProps.setValue = () => {};
 
+  const importData = () => {
+
+  }
+
+  const setImport = () => {
+    const textElement = document.getElementById("import-field");
+    localStorage.setItem('data', textElement.value);
+    dataStore.update();
+    redirect('/');
+  }
+
+  const setExportToClipboard = () => {
+    navigator.clipboard.writeText(dataStore.getJSONData());
+  };
+
   return (
     <>
       <header className="header">
@@ -41,6 +56,9 @@ function Header({ dataStore }) {
           </div>
           <Link to="/" className="menu-item menu-button">
             <div className="text">Solo requests</div>
+          </Link>
+          <Link to="/chain" className="menu-item menu-button">
+            <div className="text">Chain requests</div>
           </Link>
           <Link to="/snippets" className="menu-item menu-button">
             <div className="text">Snippets</div>
@@ -54,26 +72,26 @@ function Header({ dataStore }) {
         </div>
       </header>
 
-      <div onClick={(event) => changeImportActive(event)} id="import-popup" className={`main-popup ${isImportActive ? 'active' : ''}`}>
+      <div onMouseDown={(event) => changeImportActive(event)} id="import-popup" className={`main-popup ${isImportActive ? 'active' : ''}`}>
         <div className="dialogue request-menu">
           <RequestBlockContainer className="request-headers" title="Импорт">
-            <textarea id="response-body" className="json-body export-area" />
+            <textarea id="import-field" className="json-body export-area" />
             <div className="submit-field">
-              <button className="button" type="submit">Импортировать</button>
+              <button onClick={() => setImport()} className="button" type="submit">Импортировать</button>
             </div>
           </RequestBlockContainer>
         </div>
         <div className="dialogue request-menu">
           <RequestBlockContainer className="request-headers" title="Экспорт">
-            <textarea value={dataStore.getJSONData()} id="response-body" className="json-body export-area" />
+            <textarea value={dataStore.getJSONData()} id="export-field" className="json-body export-area" />
             <div className="submit-field">
-              <button className="button" type="submit">Экспортировать</button>
+              <button onClick={() => setExportToClipboard()} className="button" type="submit">Копировать</button>
             </div>
           </RequestBlockContainer>
         </div>
       </div>
 
-      <div onClick={(event) => changeCreationActive(event)} id="group-creation-popup" className={`main-popup ${isCreationActive ? 'active' : ''}`}>
+      <div onMouseDown={(event) => changeCreationActive(event)} id="group-creation-popup" className={`main-popup ${isCreationActive ? 'active' : ''}`}>
         <div className="dialogue request-menu">
           <RequestBlockContainer className="request-headers" title="Group Creation">
             <form onSubmit={(event) => createGroup(event)}>

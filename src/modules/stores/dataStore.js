@@ -12,6 +12,13 @@ export class DataStore {
     this.#updateGroupedRequests();
   }
 
+  update(){
+    const data = JSON.parse(localStorage.getItem('data'));
+    this.requests = data.requests;
+    this.groups = data.groups ? data.groups : [];
+    this.#updateGroupedRequests();
+  }
+
   static getOrCreateGroup(){
     const data = JSON.parse(localStorage.getItem('data'));
     if(data.groups.length) return data.groups[0].id;
@@ -33,7 +40,6 @@ export class DataStore {
     }
 
     for(let item of this.requests){
-      console.log(item);
       if(!groups[item.groupId]) continue;
       if(!groups[item.groupId].requests){
         groups[item.groupId].requests = [];
@@ -48,9 +54,17 @@ export class DataStore {
     }
   }
 
+  static getRequest(id){
+    const globalData = JSON.parse(localStorage.getItem('data'));
+    for(let request of globalData.requests){
+      if(request.id === id) return request;
+    }
+
+    return null;
+  }
+
   #findPosition(requestId){
     let currentIndex = 0;
-    console.log('here');
     for(let item of this.requests){
       if(item.id === requestId) return currentIndex;
       currentIndex++;
@@ -59,14 +73,20 @@ export class DataStore {
   }
 
   removeRequest(requestId){
+    console.log('here');
     const index = this.#findPosition(requestId);
     this.requests.splice(index, 1);
     localStorage.setItem('data', JSON.stringify(toJS(this)));
     this.#updateGroupedRequests();
   }
 
+  getRequest(requestId){
+    const requestIndex = this.#findPosition(requestId);
+    return this.requests[requestIndex];
+  }
+
   getJSONData(){
-    return JSON.stringify(toJS(this));
+    return localStorage.getItem('data');
   }
 
   pushNew(request){

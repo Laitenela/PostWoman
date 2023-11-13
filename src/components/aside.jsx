@@ -3,12 +3,11 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import GroupMenu from "./containers/groupMenu";
 
-const Aside = observer(({removeRequest, dataStore }) => {
-  const [isHidden, setHidden] = useState(true);
+const Aside = observer(({ dataStore }) => {
   return (
       <aside className="side-menu">
         {dataStore.groupedRequests.map(({ name, id, requests }) => (
-            <GroupMenu name={name} removeRequest={removeRequest} key={id} requests={requests}></GroupMenu>
+            <GroupMenu dataStore={dataStore} name={name} key={id} requests={requests}></GroupMenu>
         ))}
       </aside>
   );
