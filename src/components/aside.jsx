@@ -7,7 +7,7 @@ const Aside = observer(({ dataStore }) => {
   return (
       <aside className="side-menu">
         {dataStore.groupedRequests.map(({ name, id, requests }) => (
-            <GroupMenu dataStore={dataStore} name={name} key={id} requests={requests}></GroupMenu>
+            <GroupMenu dataStore={dataStore} name={name} key={id} id={id} requests={requests}></GroupMenu>
         ))}
       </aside>
   );

@@ -13,6 +13,7 @@ dist-ssr
 *.local
 
 postwoman-win32-x64
+postwoman-linux-x64
 
 # Editor directories and files
 .vscode/*

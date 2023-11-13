@@ -834,11 +834,11 @@ input[type="checkbox"]:disabled {
   /* border-color: -internal-light-dark(rgb(118, 118, 118), rgb(133, 133, 133)); */
 }
 
-.chains-menu__param-item>select{
+.chains-menu__param-item>select {
   font-size: 1.2rem;
 }
 
-.requests-chain__header>.requests-chain__name{
+.requests-chain__header>.requests-chain__name {
   background-color: rgba(23, 33, 43, 0) !important;
   color: white !important;
   border: 0px !important;
@@ -846,19 +846,65 @@ input[type="checkbox"]:disabled {
   text-align: center !important;
 }
 
-.request-headers{
+.request-headers {
   position: relative;
 }
 
 
-.request-headers:hover .textarea-copy-button{
+.request-headers:hover .textarea-copy-button {
   opacity: 1;
 }
 
-.textarea-copy-button{
+.textarea-copy-button {
   position: absolute;
   opacity: 0;
   bottom: 0.5rem;
   right: 0rem;
   transition: opacity ease-out 100ms;
 }
+
+.pushed-json-body {
+  color: white;
+  background-color: #17212B;
+  border: solid 1px rgb(133, 133, 133);
+  text-wrap: nowrap;
+}
+
+.pushed-json-body__container{
+  display: flex;
+  padding: 1rem;
+  gap: 3rem;
+}
+
+.pushed-json-body__container{
+  position: relative;
+  border: solid 1px rgb(133, 133, 133);
+}
+
+.pushed-json-body__button{
+  position: absolute;
+  right: 1rem;
+  top: 0.75rem;
+  transition: opacity ease-out 100ms;
+  opacity: 0;
+}
+
+.pushed-json-body__container:hover .pushed-json-body__button{
+  opacity: 1;
+}
+
+.chains-menu>.save-button{
+  opacity: 0;
+  margin-top: 1rem;
+}
+
+.chains-menu:hover>.save-button{
+  opacity: 1;
+}
+
+/* <div className="pushed-json-body json-body">
+{snippetsStore.pushedResponses.map((response, index) => 
+  <div key={index} className="pushed-json-body__container">
+    <div className="pushed-json-body__item">Request Name: {response.name}</div>
+    <div className="pushed-json-body__item">Status: {response.status}</div>
+    <div className="pushed-json-body__item">Status text: {response.statusText}</div> */

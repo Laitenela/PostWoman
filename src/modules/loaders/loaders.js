@@ -2,6 +2,7 @@ import { ChainsStore } from "../stores/chainStore";
 import { DataStore } from "../stores/dataStore";
 import { RequestStore } from "../stores/requestStore";
 import { SnippetsStore } from "../stores/snippetsStore";
+import { v4 as uuidv4 } from 'uuid';
 
 export const routeLoader = {};
 
@@ -16,7 +17,7 @@ const getPosition = (requestsArray, id) => {
 
 routeLoader.app = ({ params }) => {
   if(!localStorage.getItem('data')){
-    localStorage.setItem('data', JSON.stringify({requests: [], groups: []}));
+    localStorage.setItem('data', JSON.stringify({requests: [], groups: [{id: uuidv4(), name: "Fallback Group"}]}));
   }
   
   const dataStore = new DataStore(JSON.parse(localStorage.getItem('data')));

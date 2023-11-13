@@ -3,6 +3,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 
 const GroupMenu = observer(({ dataStore, name, id, requests }) => {
+  console.log(id);
   const [isHidden, setHidden] = useState(true);
   
   const requestDragStart = (event, type, id) => {
@@ -18,7 +19,7 @@ const GroupMenu = observer(({ dataStore, name, id, requests }) => {
       <div onClick={() => setHidden(!isHidden)} key={id} className="side-menu__button group">
         <div>
           <div className="side-menu__text">{name}{isHidden ? " ▼" : " ▲"}</div>
-          <div className="side-menu__remove-button" onClick={() => dataStore.removeRequest(id)}>
+          <div className="side-menu__remove-button" onClick={() => dataStore.removeGroup(id)}>
             🗑️
           </div>
         </div>

@@ -8,6 +8,7 @@ export class SnippetsStore {
   activeSnippetId = "";
   chainData = {};
   requests = [];
+  pushedResponses = [];
   activeRequest = {};
   response = {};
   snips = [];
@@ -90,6 +91,11 @@ export class SnippetsStore {
     }
 
     return null;
+  }
+
+  pushResponse(name, response){
+    this.pushedResponses.push(new Response(response));
+    this.pushedResponses.at(-1).setName(name);
   }
 
   setResponse(response) {

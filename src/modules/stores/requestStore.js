@@ -261,16 +261,25 @@ export class RequestStore {
 export class Response {
   headers = [];
   body = "";
+  name = "";
   mainData = "";
-  constructor({headers = [], data = ""}){
+  status = '';
+  statusText = '';
+  constructor({status, statusText, headers = [], data = ""}){
     for(let key of Object.keys(headers)){
       this.headers.push({
         key, 
         value: headers[key], 
       });
     }
+    this.status = status;
+    this.statusText = statusText;
     this.body = data.slice(0, 1000);
     this.mainData = data;
+  }
+
+  setName(value){
+    this.name = value;
   }
 }
 

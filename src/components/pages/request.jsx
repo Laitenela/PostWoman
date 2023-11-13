@@ -141,6 +141,7 @@ const RequestPage = observer(() => {
     if(!requestStore.name) return;
     if(!requestStore.groupId) return;
     const newId = requestStore.saveThis();
+    dataStore.update();
     navigate(`/soloRequest/${newId}`);
   }
 

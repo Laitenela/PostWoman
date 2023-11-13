@@ -148,11 +148,11 @@ const Snippets = observer(() => {
           const pushingType = property.settings.properties[0].value;
           if(pushingType === 'none') continue;
           if(pushingType === 'fill') snippetsStore.setResponse(chainResponse);
+          if(pushingType === 'push') snippetsStore.pushResponse(chainRequest.requestData.name, chainResponse);
           continue;
         }
       }
     }
-
   };
 
   const sendChainRequests = async (collection, chainRequests) => {
@@ -191,6 +191,10 @@ const Snippets = observer(() => {
     navigator.clipboard.writeText(snippetsStore.activeRequest.response.mainData);
   };
 
+  const copyToClipboard = (response) => {
+    navigator.clipboard.writeText(response.mainData);
+  }
+
   return (
     <>
       <div className="request-menu">
@@ -226,6 +230,20 @@ const Snippets = observer(() => {
       </div>
 
       <div className="response-menu">
+      <RequestBlockContainer className="request-headers" title="PUSHED RESPONSES">
+          <div className="pushed-json-body json-body">
+            {snippetsStore.pushedResponses.map((response, index) => 
+              <div key={index} className="pushed-json-body__container">
+                <div className="pushed-json-body__item">Request Name: {response.name}</div>
+                <div className="pushed-json-body__item">Status: {response.status ? response.status : "Unsigned Error"}</div>
+                {response.statusText && <div className="pushed-json-body__item">Status text: {response.statusText}</div>}
+                <button onClick={() => copyToClipboard(response)} className="pushed-json-body__button button">Copy body</button>
+                {/* <span>Request Name: {response.name}</span>
+                <span>Request Name: {response.name}</span> */}
+              </div>
+            )}
+          </div>
+        </RequestBlockContainer>
         <RequestBlockContainer className="request-headers" title="BODY">
           <button className="textarea-copy-button button">Copy all</button>
           <textarea
