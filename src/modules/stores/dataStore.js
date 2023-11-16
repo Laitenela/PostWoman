@@ -100,7 +100,6 @@ export class DataStore {
       globalData.groupedRequests.splice(currentIndex, 1);
     }
     
-    console.log(globalData);
     localStorage.setItem('data', JSON.stringify(globalData));
     this.update();
   }

@@ -66,7 +66,6 @@ const Snippets = observer(() => {
       const response = await axios(requestOptions);
       snippetsStore.setResponse(response);
     } catch (err) {
-      console.log(err);
       const response = err.response;
       const errorResponse = {data: `Code: ${err.code}.\nMessage: ${err.message}.\n\nHas response: ${Boolean(err.response)}\nCode: ${response?.status}\nStatusText: ${response?.statusText}\nData: ${response?.data}`}
       snippetsStore.setResponse(errorResponse);
@@ -120,20 +119,24 @@ const Snippets = observer(() => {
     chainRequest.updateAbortController();
     requestOptions.signal = chainRequest.abortController.signal;
 
-    let chainResponse;
+    let chainResponse = {};
     try {
       const response = await axios(requestOptions);
       chainResponse = response;
     } catch (err) {
-      console.log(err);
       const response = err.response;
+      chainResponse = err;
+
       const errorResponse = {
         data: `Code: ${err.code}.\nMessage: ${err.message}.\n\nHas response: ${Boolean(err.response)}\nCode: ${
           response?.status
         }\nStatusText: ${response?.statusText}\nData: ${response?.data}`,
       };
-      chainResponse = errorResponse;
+
+      chainResponse.data = errorResponse.data;
     }
+    
+    console.log(chainResponse);
 
     for(let property of chainRequest.properties){
       const type = property.type;
@@ -195,9 +198,21 @@ const Snippets = observer(() => {
     navigator.clipboard.writeText(response.mainData);
   }
 
+  const dropItem = (event) => {
+    event.preventDefault();
+
+    const id = event.dataTransfer.getData('id');
+    snippetsStore.setActiveSnippetId(id);
+  }
+
+  const dragOver = (event) => {
+    event.preventDefault();
+    event.dataTransfer.dropEffect = "move";
+  }
+
   return (
     <>
-      <div className="request-menu">
+      <div onDrop={dropItem} onDragOver={dragOver} className="request-menu">
         <div className="snippet-select param-item">
           <select
             value={snippetsStore.activeSnippetId}
@@ -235,7 +250,8 @@ const Snippets = observer(() => {
             {snippetsStore.pushedResponses.map((response, index) => 
               <div key={index} className="pushed-json-body__container">
                 <div className="pushed-json-body__item">Request Name: {response.name}</div>
-                <div className="pushed-json-body__item">Status: {response.status ? response.status : "Unsigned Error"}</div>
+                <div className="pushed-json-body__item">Status: {response.request.status ? response.request.status : "Unsigned Error"}</div>
+                {console.log(response)}
                 {response.statusText && <div className="pushed-json-body__item">Status text: {response.statusText}</div>}
                 <button onClick={() => copyToClipboard(response)} className="pushed-json-body__button button">Copy body</button>
                 {/* <span>Request Name: {response.name}</span>
@@ -245,7 +261,7 @@ const Snippets = observer(() => {
           </div>
         </RequestBlockContainer>
         <RequestBlockContainer className="request-headers" title="BODY">
-          <button className="textarea-copy-button button">Copy all</button>
+          <button onClick={() => copyToClipboard(snippetsStore.response)} className="textarea-copy-button button">Copy all</button>
           <textarea
             onCopy={(event) => setResponseToClipboard(event)}
             value={snippetsStore.response.body}

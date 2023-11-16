@@ -10,8 +10,9 @@ const Chain = observer(() => {
 
   const dropItem = (event) => {
     const containerRect = event.currentTarget.getBoundingClientRect();
-
+    const rem = parseFloat(window.getComputedStyle(document.documentElement).fontSize);
     const type = event.dataTransfer.getData('type');
+    console.log(type);
     if(type === "requestChains") return;
 
     const id = event.dataTransfer.getData('id');
@@ -25,14 +26,14 @@ const Chain = observer(() => {
       }
       const positionX = event.pageX - containerRect.left - startX;
       const positionY = event.pageY - containerRect.top - startY;
-      const chain = chainsStore.createChain(positionX, positionY);
+      const chain = chainsStore.createChain(positionX / rem, positionY / rem);
       chain.pushRequest(dataStore.getRequest(id));
       return;
     }
     const chainIndex = chainsStore.getChainIndex(id);
 
     if(chainIndex === -1) return;
-    chainsStore.setChainPosition(chainIndex, event.pageX - containerRect.left - startX, event.pageY - containerRect.top - startY);
+    chainsStore.setChainPosition(chainIndex, (event.pageX - containerRect.left - startX) / rem, (event.pageY - containerRect.top - startY) / rem);
     console.log(chainsStore);
   }
 
@@ -60,6 +61,7 @@ const Chain = observer(() => {
     if(!chainsStore.name) return;
     if(!chainsStore.groupId) return;
     const newId = chainsStore.saveThis();
+    dataStore.update();
     navigate(`/chain/${newId}`);
   }
 
@@ -77,7 +79,7 @@ const Chain = observer(() => {
       </div>
       <input onChange={(event) => chainsStore.setName(event.target.value)} type="text" className="chains-menu__name" value={chainsStore.name} placeholder="Request Chains Name" />
       {chainsStore.chains.map((chain, chainIndex) => {
-        return (<div id={chain.id} style={{top: chain.position.y + 'px', left: chain.position.x + 'px'}} key={chain.id} onDragStart={(event) => dragStart(event, chain.id)} className="requests-chain">
+        return (<div id={chain.id} style={{top: chain.position.y + 'rem', left: chain.position.x + 'rem'}} key={chain.id} onDragStart={(event) => dragStart(event, chain.id)} className="requests-chain">
           <div className="requests-chain__header param-item">
             <input onChange={(event) => chain.setName(event.target.value)} className="requests-chain__name" type="text" value={chain.name}/>
           </div>

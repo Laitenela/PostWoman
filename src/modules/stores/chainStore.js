@@ -246,7 +246,6 @@ class ChainItem {
       const snips = Snip.findSnips(jsonRequest);
       const snipKeys = Object.keys(snips);
 
-      console.log(snips);
       for (let item of data.chainSnips) {
         if (!(item.key in snips)) continue;
         usedSnips[item.key] = 1;

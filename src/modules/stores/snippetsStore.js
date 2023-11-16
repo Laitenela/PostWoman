@@ -38,7 +38,6 @@ export class SnippetsStore {
   }
 
   setActiveSnippetId(newId) {
-    console.log(newId);
     if (this.activeSnippetId === newId) return;
     this.activeSnippetId = newId;
 
@@ -64,8 +63,6 @@ export class SnippetsStore {
     for (let snip of Object.entries(newSnips)) {
       this.snips.push(new Snip(snip));
     }
-
-    console.log(this.#getSnipsObject());
   }
 
   #getSnipsObject() {

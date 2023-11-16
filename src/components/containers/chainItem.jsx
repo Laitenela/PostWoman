@@ -7,6 +7,8 @@ const ChainItem = observer(({ chainItem, chain, chainIndex }) => {
   const hideInner = () => {
     setIsHiddenInner(!isHiddenInner);
   };
+
+
   return (
     <div className="chain-item">
       <div onClick={() => hideInner()} className="chain-item__name">

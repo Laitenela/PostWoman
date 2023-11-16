@@ -20,8 +20,8 @@ function createWindow(){
   });
 
   win.setMenu(null);
-  // win.loadURL('http://localhost:5173/');
-  win.loadFile('dist/index.html');
+  win.loadURL('http://localhost:5173/');
+  // win.loadFile('dist/index.html');
 
   win.webContents.openDevTools();
 

@@ -49,7 +49,6 @@ export class RequestStore {
         this.body.addParam(newParam);
       }
     }
-    console.log(this);
     this.updateAuthorization();
   }
 
@@ -71,17 +70,22 @@ export class RequestStore {
 
   getSnips(){
     const jsonData = JSON.stringify(this.getUsefulData());
-    console.log(Snip.findSnips(jsonData));
     return Object.entries(Snip.findSnips(jsonData)).map((items) => `${items[0]}: ${items[1] ? items[1] : items[0]}`).join('\n');
   }
 
   saveAsNew(){
     const data = JSON.parse(localStorage.getItem('data'));
-    const inner = toJS(this);
+    const innerData = toJS(this);
+    for(let key of Object.keys(innerData.body.params)){
+      if(key !== innerData.body.type) innerData.body.params[key] = []; 
+    }
+    for(let key of Object.keys(innerData.body.raws)){
+      if(key !== innerData.body.type) innerData.body.raws[key] = []; 
+    }
     const newId = uuidv4();
-    inner.response = {};
-    inner.id = newId;
-    data.requests.push(inner);
+    innerData.response = {};
+    innerData.id = newId;
+    data.requests.push(innerData);
     localStorage.setItem('data', JSON.stringify(data));
     this.id = newId;
     return newId;
@@ -183,6 +187,12 @@ export class RequestStore {
     const data = JSON.parse(localStorage.getItem('data'));
     const index = this.#findIdPosition(data.requests, this.id);
     const innerData = toJS(this);
+    for(let key of Object.keys(innerData.body.params)){
+      if(key !== innerData.body.type) innerData.body.params[key] = []; 
+    }
+    for(let key of Object.keys(innerData.body.raws)){
+      if(key !== innerData.body.type) innerData.body.raws[key] = []; 
+    }
     innerData.response = {};
     if(index === -1) data.requests.push(innerData);
     else data.requests[index] = innerData;
@@ -265,7 +275,7 @@ export class Response {
   mainData = "";
   status = '';
   statusText = '';
-  constructor({status, statusText, headers = [], data = ""}){
+  constructor({status, statusText, headers = [], data = "", request}){
     for(let key of Object.keys(headers)){
       this.headers.push({
         key, 
@@ -276,6 +286,7 @@ export class Response {
     this.statusText = statusText;
     this.body = data.slice(0, 1000);
     this.mainData = data;
+    this.request = request;
   }
 
   setName(value){

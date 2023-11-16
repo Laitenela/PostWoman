@@ -32,10 +32,9 @@ routeLoader.snippets = ({ params }) => {
 }
 
 routeLoader.chain = ({ params }) => {
-  console.log(params.id);
   const data = JSON.parse(localStorage.getItem('data'));
   const position = getPosition(data.requests, params.id);
-  console.log(data.requests[position]);
+  
   if(position === -1) return new ChainsStore(data);
   else return new ChainsStore(data.requests[position]);
 }

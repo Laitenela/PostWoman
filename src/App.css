@@ -102,6 +102,7 @@ header .menu {
   top: 0;
   background-color: #0E1621;
   box-shadow: -1px 0px 2px white;
+  -webkit-app-region: drag;
 }
 
 header .menu-button.menu-item:hover {
@@ -127,6 +128,7 @@ header .menu-item {
   font-size: 16px;
   color: white;
   transition: color ease-out 500ms, background-color ease-out 200ms;
+  -webkit-app-region: no-drag;
 }
 
 .menu-item>.text {
