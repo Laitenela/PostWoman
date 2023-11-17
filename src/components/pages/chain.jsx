@@ -32,7 +32,7 @@ const Chain = observer(() => {
 
       const chain = chainsStore.createChain(positionX, positionY);
       chain.pushRequest(dataStore.getRequest(id));
-      
+
       return;
     }
 
@@ -41,7 +41,7 @@ const Chain = observer(() => {
     if(chainIndex === -1) return;
 
     const chainPositionX = (event.pageX - containerRect.left - startX) / rem;
-    const chainPositionY = (event.pageX - containerRect.left - startX) / rem;
+    const chainPositionY = (event.pageY - containerRect.left - startY) / rem;
 
     chainsStore.setChainPosition(chainIndex, chainPositionX, chainPositionY);
   }
