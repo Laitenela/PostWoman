@@ -1,5 +1,6 @@
 import { observer } from "mobx-react-lite";
 import TextInput from "../../micro/textInput";
+import { useContext } from "react";
 
 const KeysTable = observer(({ paramRows, addParam, removeParam, immutableParams }) => {
   return (

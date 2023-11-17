@@ -1,17 +1,16 @@
 import { observer } from "mobx-react-lite";
-import { useLoaderData, useNavigate, useOutletContext } from "react-router-dom";
 import TextInput from "../micro/textInput";
-import RequestBlockContainer from "../containers/requestBlockContainer/requestBlockContainer";
-import KeysTable from "../containers/keysTable/keysTable";
-import axios from 'axios';
-import AuthorizationForm from "../containers/formFields/authorizationForm";
 import BodyForm from "../containers/formFields/bodyForm";
+import KeysTable from "../containers/keysTable/keysTable";
 import ResponseKeysTable from "../containers/reponseKeysTable";
+import AuthorizationForm from "../containers/formFields/authorizationForm";
+import { useLoaderData, useNavigate, useOutletContext } from "react-router-dom";
+import RequestBlockContainer from "../containers/requestBlockContainer/requestBlockContainer";
 
 const RequestPage = observer(() => {
+  const navigate = useNavigate();
   const dataStore = useOutletContext();
   const requestStore = useLoaderData();
-  const navigate = useNavigate();
 
   const nameProps = {};
   nameProps.id = "requestName";
@@ -41,164 +40,123 @@ const RequestPage = observer(() => {
   tokenProps.value = requestStore.authorization.token;
   tokenProps.setValue = (newValue) => requestStore.changeToken(newValue);
 
-  const addParam = async (parent, type, value) => {
-    const typePositions = {
-      'key': 0,
-      'value': 1,
-      'description': 2,
-    }
-    
+  const headerKeysProps = {};
+  headerKeysProps.paramRows = requestStore.headers;
+  headerKeysProps.immutableParams = requestStore.immutableHeaders;
+  headerKeysProps.addParam = (type, value) => addParam("headers", type, value);
+  headerKeysProps.removeParam = (param) => requestStore.removeParam("header", param);
+
+  const selectProps = {};
+  selectProps.name = "snippet";
+  selectProps.id = "snippet-select";
+  selectProps.value = requestStore.groupId;
+  selectProps.className = "snippet-select__selector";
+  selectProps.onChange = (event) => requestStore.setGroupId(event.target.value);
+
+  return (
+    <>
+      <div className="request-menu">
+        <button onClick={saveThis} className="save-button button">
+          Сохранить
+        </button>
+        <button onClick={saveToCollection} className="save-button button">
+          Сохранить как новый
+        </button>
+        <div className="snippet-select param-item">
+          <select {...selectProps}>
+            {dataStore.groups.map((group) => (
+              <option value={group.id} key={group.id}>
+                {group.name}
+              </option>
+            ))}
+          </select>
+        </div>
+        <TextInput {...nameProps} />
+        <form onSubmit={(event) => requestStore.sendRequest(event)}>
+          <TextInput {...methodProps} />
+          <TextInput {...urlProps} />
+          <h2 className="request-head-title param-item">Request</h2>
+          <AuthorizationForm authorization={requestStore.authorization} />
+          <RequestBlockContainer className="request-headers" title="HEADERS">
+            <KeysTable {...headerKeysProps} />
+          </RequestBlockContainer>
+          <BodyForm body={requestStore.body} addParam={addParam} />
+          <div className="submit-field">
+            <button className="button" type="submit">
+              {requestStore.requestStatus ? "Отменить" : "Отправить"}
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <div className="response-menu">
+        <h2 className="request-head-title param-item">Response</h2>
+        <RequestBlockContainer className="request-headers" title="SNIPPETS">
+          <textarea value={requestStore.getSnips()} id="snippets-body" className="json-body" />
+        </RequestBlockContainer>
+        <RequestBlockContainer className="request-headers" title="BODY">
+          <button onClick={requestStore.setBodyToClipboard} className="textarea-copy-button button">
+            Copy all
+          </button>
+          <textarea value={requestStore.response.body} id="response-body" className="json-body" />
+        </RequestBlockContainer>
+        <RequestBlockContainer className="request-headers" title="HEADERS">
+          <ResponseKeysTable paramRows={requestStore.response.headers} />
+        </RequestBlockContainer>
+      </div>
+    </>
+  );
+
+  async function addParam (parent, type, value){
+    const typePositions = {};
+    typePositions.key = 0;
+    typePositions.value = 1;
+    typePositions.description = 2;
+
     const id = await requestStore.addParam(parent, type, value);
     const newElements = document.querySelectorAll(`#${id} input[type="text"]`);
     newElements[typePositions[type]].focus();
   }
 
-  const sendData = async (event) => {
-    event.preventDefault();
-    if(requestStore.requestStatus){
-      requestStore.setRequestStatus(false);
-      requestStore.abortController.abort();
-      return;
-    }
+  function animateErrorElement(element){
+    element.style.filter = "hue-rotate(100deg)";
+    element.style.borderColor = "darkBlue";
 
-    // const content = "File content to save";
-    // const element = document.createElement("a");
-    // const file = new Blob([content], {type: "text/plain"});
-    // element.href = URL.createObjectURL(file);
-    // element.download = "file.txt";
-    // element.click();
-
-    const data = requestStore.getData();
-    const requestOptions = {};
-    const requestHeaders = {};
-    let requestBody;
-
-    for(let item of data.headers){
-      if(!item.enabled) continue;
-      requestHeaders[item.key] = item.value;
-    }
-
-    for(let item of data.immutableHeaders){
-      requestHeaders[item.key] = item.value;
-    }
-
-    if(data.body.type === "x-www-form-urlencoded"){
-      requestBody = new URLSearchParams();
-      for(let item of data.body.params[data.body.type]){
-        if(!item.enabled) continue;
-        requestBody.append(item.key, item.value);
-      }
-    }
-
-    if(data.body.type === "json"){
-      requestBody = data.body.raws.json;
-    }
-
-    requestOptions.method = data.method;
-    requestOptions.url = data.url;
-    requestOptions.headers = requestHeaders;
-    requestOptions.data = requestBody;
-    requestOptions.transformResponse = (data) => data;
-    requestStore.updateAbortController();
-    requestOptions.signal = requestStore.abortController.signal;
-
-    const form = event.target;
-    const button = form.querySelector('.button');
-    button.innerHTML = "Отменить";
-    requestStore.setRequestStatus(true);
-
-    try{
-      const response = await axios(requestOptions);
-      requestStore.setResponse(response);
-    } catch (err) {
-      console.log(err);
-      const response = err.response;
-      const errorResponse = {data: `Code: ${err.code}.\nMessage: ${err.message}.\n\nHas response: ${Boolean(err.response)}\nCode: ${response?.status}\nStatusText: ${response?.statusText}\nData: ${response?.data}`}
-      requestStore.setResponse(errorResponse);
-    }
-
-    requestStore.setRequestStatus(false);
-    button.innerHTML = "Отправить";
-
-    // const element = document.getElementById('response-body');
-    // navigator.clipboard.writeText(response.data);
-    // var dlAnchorElem = document.getElementById('downloadAnchorElem');
-    // dlAnchorElem.setAttribute("href", response.data);
-    // dlAnchorElem.setAttribute("download", "response.json");
-    // dlAnchorElem.click();
-    // element.innerHTML = response.data.slice(0, 1000);
+    setTimeout(() => {
+      element.style.filter = "";
+      element.style.borderColor = "";
+    }, 1000);
   }
 
-  const saveToCollection = () => {
-    if(!requestStore.name) return;
-    if(!requestStore.groupId) return;
-    const newId = requestStore.saveAsNew();
-    dataStore.pushNew(requestStore.getData());
-    navigate(`/soloRequest/${newId}`);
-  }
-
-  const saveThis = () => {
-    if(!requestStore.name) return;
-    if(!requestStore.groupId) return;
+  function saveThis(){
+    if(!validateData()) return;
+    
     const newId = requestStore.saveThis();
     dataStore.update();
+
     navigate(`/soloRequest/${newId}`);
   }
 
-  const setAllToClipboard = () => {
-    navigator.clipboard.writeText(requestStore.response.mainData);
+  function saveToCollection(){
+    if(!validateData()) return;
+
+    const newId = requestStore.saveAsNew();
+    dataStore.pushNew(requestStore.getData());
+
+    navigate(`/soloRequest/${newId}`);
   }
 
-  const setResponseToClipboard = (event) => {
-    const selectionText = document.getSelection().toString();
-    if(selectionText.length !== requestStore.response.body.length) return;
-    event.preventDefault();
-    navigator.clipboard.writeText(requestStore.response.mainData);
-  }
+  function validateData(){
+    if (!requestStore.groupId) return false;
 
-  return (
-    <>
-    <div className="request-menu">
-      <button onClick={() => saveThis()} className="save-button button">Сохранить</button>
-      <button onClick={() => saveToCollection()} className="save-button button">Сохранить как новый</button>
-      <div className="snippet-select param-item">
-        <select value={requestStore.groupId} onChange={(event) => requestStore.setGroupId(event.target.value)} className="snippet-select__selector" name="snippet" id="snippet-select">
-          {dataStore.groups.map(group => {
-            return <option value={group.id} key={group.id}>{group.name}</option>
-          })}
-        </select>
-      </div>
-      <TextInput {...nameProps} />
-      <form onSubmit={sendData}>
-        <TextInput {...methodProps} />
-        <TextInput {...urlProps} />
-        <h2 style={{textAlign: "center", display: "block", position: "absolute", top: '0', right: '-12rem'}} className="param-item">Request</h2>
-        <AuthorizationForm authorization={requestStore.authorization}/>
-        <RequestBlockContainer className="request-headers" title="HEADERS">
-          <KeysTable immutableParams={requestStore.immutableHeaders} removeParam={(param) => requestStore.removeParam('header', param)} addParam={(type, value) => addParam('headers', type, value)} paramRows={requestStore.headers}/>
-        </RequestBlockContainer>
-        <BodyForm body={requestStore.body} addParam={addParam}/>
-        <div className="submit-field">
-          <button className="button" type="submit">Отправить</button>
-        </div>
-      </form>
-    </div>
-    
-    <div className="response-menu">
-      <h2 style={{textAlign: "center", display: "block", position: "absolute", top: '0', right: '-12rem'}} className="param-item">Response</h2>
-      <RequestBlockContainer className="request-headers" title="SNIPPETS">
-        <textarea onCopy={(event) => setResponseToClipboard(event)} value={requestStore.getSnips()} id="snippets-body" className="json-body" />
-      </RequestBlockContainer>
-      <RequestBlockContainer className="request-headers" title="BODY">
-        <button onClick={() => setAllToClipboard()} className="textarea-copy-button button">Copy all</button>
-        <textarea onCopy={(event) => setResponseToClipboard(event)} value={requestStore.response.body} id="response-body" className="json-body" />
-      </RequestBlockContainer>
-      <RequestBlockContainer className="request-headers" title="HEADERS">
-          <ResponseKeysTable paramRows={requestStore.response.headers}/>
-      </RequestBlockContainer>
-    </div>
-    </>
-  );
+    if (!requestStore.name) {
+      const requestNameElement = document.getElementById("requestName");
+      animateErrorElement(requestNameElement);
+      return false;
+    }
+
+    return true;
+  }
 });
 
 export default RequestPage;

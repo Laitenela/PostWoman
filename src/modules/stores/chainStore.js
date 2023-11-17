@@ -284,7 +284,7 @@ class ChainItem {
 
 class Property {
   type = 'console push';
-  possibleTypes = ['console push', 'parse and push to collection'];
+  possibleTypes = ['console push', 'parse and push to collection', 'forsed save to file'];
   settings = {};
   constructor(data) {
     makeAutoObservable(this);
@@ -294,6 +294,9 @@ class Property {
         this.settings = new ConsolePushProperties(data.settings);
         break;
       case('parse and push to collection'):
+        this.settings = new ParseAndCollectProperties(data.settings);
+        break;
+      case('forsed save to file'):
         this.settings = new ParseAndCollectProperties(data.settings);
         break;
     }
@@ -308,6 +311,9 @@ class Property {
         break;
       case('parse and push to collection'):
         this.settings = new ParseAndCollectProperties({});
+        break;
+      case('forsed save to file'):
+        this.settings = new SaveResponseProperties({});
         break;
     }
   }
@@ -326,6 +332,30 @@ class ConsolePushProperties {
       }))
     } else {
       this.properties.push(new PropertyKey(data.properties[0]));
+    }
+  }
+}
+
+class SaveResponseProperties {
+  properties = [];
+  constructor(data) {
+    makeAutoObservable(this);
+    if (!data.properties) {
+      this.properties.push(new PropertyKey({
+        type: 'text input',
+        keyName: 'Save: File path',
+        value: '',
+      }));
+      this.properties.push(new PropertyKey({
+        type: 'select',
+        keyName: 'Open: File Editor',
+        possibleValues: ['none', 'VS Code'],
+        value: 'none'
+      }));
+    } else {
+      for(let property of data.properties){
+        this.properties.push(new PropertyKey(property));
+      }
     }
   }
 }

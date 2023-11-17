@@ -12,29 +12,38 @@ const Chain = observer(() => {
     const containerRect = event.currentTarget.getBoundingClientRect();
     const rem = parseFloat(window.getComputedStyle(document.documentElement).fontSize);
     const type = event.dataTransfer.getData('type');
-    console.log(type);
+    
     if(type === "requestChains") return;
 
     const id = event.dataTransfer.getData('id');
+
     const startX = event.dataTransfer.getData('startX');
     const startY = event.dataTransfer.getData('startY');
+
     if(type === 'request'){
       if(event.target.classList.contains("requests-chain")){
         const chainIndex = chainsStore.getChainIndex(event.target.id);
         chainsStore.chains[chainIndex].pushRequest(dataStore.getRequest(id));
         return;
       }
-      const positionX = event.pageX - containerRect.left - startX;
-      const positionY = event.pageY - containerRect.top - startY;
-      const chain = chainsStore.createChain(positionX / rem, positionY / rem);
+
+      const positionX = (event.pageX - containerRect.left - startX) / rem;
+      const positionY = (event.pageY - containerRect.top - startY) / rem;
+
+      const chain = chainsStore.createChain(positionX, positionY);
       chain.pushRequest(dataStore.getRequest(id));
+      
       return;
     }
+
     const chainIndex = chainsStore.getChainIndex(id);
 
     if(chainIndex === -1) return;
-    chainsStore.setChainPosition(chainIndex, (event.pageX - containerRect.left - startX) / rem, (event.pageY - containerRect.top - startY) / rem);
-    console.log(chainsStore);
+
+    const chainPositionX = (event.pageX - containerRect.left - startX) / rem;
+    const chainPositionY = (event.pageX - containerRect.left - startX) / rem;
+
+    chainsStore.setChainPosition(chainIndex, chainPositionX, chainPositionY);
   }
 
   const dragStart = (event, id) => {

@@ -2,10 +2,12 @@ import { makeAutoObservable, toJS } from "mobx";
 import { Param, RequestStore, Response } from "./requestStore";
 import { ChainsStore } from "./chainStore";
 import { DataStore } from "./dataStore";
+import axios from "axios";
 
 export class SnippetsStore {
   activeSnippetType = "request";
   activeSnippetId = "";
+  hasActiveRequest = false;
   chainData = {};
   requests = [];
   pushedResponses = [];
@@ -88,6 +90,200 @@ export class SnippetsStore {
     }
 
     return null;
+  }
+
+  async sendSoloRequest(event) {
+    event.preventDefault();
+    if (this.activeRequest.requestStatus) {
+      this.activeRequest.setRequestStatus(false);
+      this.activeRequest.abortController.abort();
+      return;
+    }
+
+    const data = this.getDataAplliedSnips();
+    const requestOptions = {};
+    const requestHeaders = {};
+    let requestBody;
+
+    for (let item of data.headers) {
+      if (!item.enabled) continue;
+      requestHeaders[`__-${item.key}`] = item.value;
+    }
+
+    for (let item of data.immutableHeaders) {
+      requestHeaders[`__-${item.key}`] = item.value;
+    }
+
+    if (data.body.type === "x-www-form-urlencoded") {
+      requestBody = new URLSearchParams();
+      for (let item of data.body.params[data.body.type]) {
+        if (!item.enabled) continue;
+        requestBody.append(item.key, item.value);
+      }
+    }
+
+    if (data.body.type === "json") {
+      requestBody = data.body.raws.json;
+    }
+
+    requestOptions.method = data.method;
+    requestOptions.url = data.url;
+    requestOptions.headers = requestHeaders;
+    requestOptions.data = requestBody;
+    requestOptions.transformResponse = (data) => data;
+    this.activeRequest.updateAbortController();
+    requestOptions.signal = this.activeRequest.abortController.signal;
+
+    console.log(requestOptions.headers);
+
+    const form = event.target;
+    const button = form.querySelector('.button');
+    button.innerHTML = "Отменить";
+    this.activeRequest.setRequestStatus(true);
+
+    try{
+      const response = await axios(requestOptions);
+      this.setResponse(response);
+    } catch (err) {
+      const response = err.response;
+      const errorResponse = {data: `Code: ${err.code}.\nMessage: ${err.message}.\n\nHas response: ${Boolean(err.response)}\nCode: ${response?.status}\nStatusText: ${response?.statusText}\nData: ${response?.data}`}
+      this.setResponse(errorResponse);
+    }
+
+    this.activeRequest.setRequestStatus(false);
+    button.innerHTML = "Отправить";
+  }
+
+  async sendChainRequest (collection, chainRequest){
+    let middleData = chainRequest.getRequestAppliedSnips(this.chainData.inputSnips);
+    for (let snipKey of Object.keys(chainRequest.notInheritSnips)) {
+      if (chainRequest.notInheritSnips[snipKey].settings.type === "from collection") {
+        const key = chainRequest.notInheritSnips[snipKey].settings.searchingKey;
+        middleData = chainRequest.applySnip(middleData, { key: snipKey, value: collection[key] });
+      }
+    }
+
+    const data = middleData;
+
+    const requestOptions = {};
+    const requestHeaders = {};
+    let requestBody;
+
+    for (let item of data.headers) {
+      if (!item.enabled) continue;
+      requestHeaders[`__-${item.key}`] = item.value;
+    }
+
+    for (let item of data.immutableHeaders) {
+      requestHeaders[`__-${item.key}`] = item.value;
+    }
+
+    if (data.body.type === "x-www-form-urlencoded") {
+      requestBody = new URLSearchParams();
+      for (let item of data.body.params[data.body.type]) {
+        if (!item.enabled) continue;
+        requestBody.append(item.key, item.value);
+      }
+    }
+
+    if (data.body.type === "json") {
+      requestBody = data.body.raws.json;
+    }
+
+    requestOptions.method = data.method;
+    requestOptions.url = data.url;
+    requestOptions.headers = requestHeaders;
+    requestOptions.data = requestBody;
+    requestOptions.transformResponse = (data) => data;
+    chainRequest.updateAbortController();
+    requestOptions.signal = chainRequest.abortController.signal;
+
+    let chainResponse = {};
+
+    try {
+      const response = await axios(requestOptions);
+      chainResponse = response;
+    } catch (err) {
+      const response = err.response;
+      chainResponse = err;
+
+      const errorResponse = {
+        data: `Code: ${err.code}.\nMessage: ${err.message}.\n\nHas response: ${Boolean(err.response)}\nCode: ${
+          response?.status
+        }\nStatusText: ${response?.statusText}\nData: ${response?.data}`,
+      };
+
+      chainResponse.data = errorResponse.data;
+    }
+
+    for(let property of chainRequest.properties){
+      const type = property.type;
+      switch(type){
+        case ("parse and push to collection"): {
+          const searchingKey = property.settings.properties[0].value;
+          const collectionKey = property.settings.properties[1].value;
+          collection[collectionKey] = chainRequest.findKeyFromJSON(searchingKey, chainResponse.data);
+          continue;
+        }
+        case ("console push"): {
+          const pushingType = property.settings.properties[0].value;
+          if(pushingType === 'none') continue;
+          if(pushingType === 'fill') this.setResponse(chainResponse);
+          if(pushingType === 'push') this.pushResponse(chainRequest.requestData.name, chainResponse);
+          continue;
+        }
+        case ("forsed save to file"): {
+          const filePath = property.settings.properties[0].value;
+          const fileEditor = property.settings.properties[1].value;
+          const fileInner = chainResponse.data;
+
+          if(fileEditor === 'none'){
+            window.electronAPI.saveFile(filePath, fileInner);
+            continue;
+          }
+
+          if(fileEditor === 'VS Code'){
+            window.electronAPI.saveAndOpenFile(filePath, fileInner);
+            continue;
+          }
+
+          continue;
+        }
+      }
+    }
+  }
+
+  async sendChainRequests (collection, chainRequests){
+    for (let chainRequest of chainRequests) {
+      await this.sendChainRequest(collection, chainRequest);
+    }
+  }
+
+  async sendChainsCollection(event){
+    event.preventDefault();
+
+    if (this.hasActiveRequest) {
+      for (let chainRequests of this.chainData.chainsCollection) {
+        for (let chainRequest of chainRequests) {
+          chainRequest.abortController.abort();
+        }
+      }
+      this.setHasActiveRequest(false);
+      return;
+    }
+
+    const collection = {};
+    this.setHasActiveRequest(true);
+    const sendedChains = [];
+    for (let chainRequests of this.chainData.chainsCollection) {
+      sendedChains.push(this.sendChainRequests(collection, chainRequests));
+    }
+    await Promise.allSettled(sendedChains);
+    this.setHasActiveRequest(false);
+  }
+
+  setHasActiveRequest(boolValue){
+    this.hasActiveRequest = boolValue;
   }
 
   pushResponse(name, response){

@@ -33,7 +33,7 @@ label:hover {
   cursor: pointer;
 }
 
-input[type="radio"]:focus {
+input[type="radio"]:focus {side-menu__text
   outline: none;
 }
 
@@ -397,6 +397,8 @@ textarea {
 
 .side-menu__text {
   user-select: none;
+  overflow: hidden;
+  text-wrap:nowrap;
   padding: 10px;
   padding-right: 20px;
 }
@@ -531,7 +533,7 @@ input[type="checkbox"]:disabled {
   background-color: rgba(0, 0, 0, 0.5);
   position: fixed;
   display: none;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   width: 100vw;
   height: 100vh;
   z-index: 10;
@@ -902,6 +904,26 @@ input[type="checkbox"]:disabled {
 
 .chains-menu:hover>.save-button{
   opacity: 1;
+}
+
+.request-head-title{
+  text-align: center;
+  display: block;
+  position: absolute;
+  top: 0; 
+  right: -12rem;
+}
+
+.side-span-element{
+  font-size: 12px;
+  white-space: nowrap;
+  font-weight: 800; 
+  text-align: center; 
+  display: inline-block; 
+  width: 25px; 
+  border-radius: 5px; 
+  padding: 2px 3px; 
+  margin-right: 5px;
 }
 
 /* <div className="pushed-json-body json-body">

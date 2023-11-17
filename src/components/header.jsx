@@ -55,10 +55,10 @@ function Header({ dataStore }) {
             <h1>Postwoman</h1>
           </div>
           <Link to="/" className="menu-item menu-button">
-            <div className="text">Solo requests</div>
+            <div className="text">Create request</div>
           </Link>
           <Link to="/chain" className="menu-item menu-button">
-            <div className="text">Chain requests</div>
+            <div className="text">Create chains</div>
           </Link>
           <Link to="/snippets" className="menu-item menu-button">
             <div className="text">Snippets</div>

@@ -1,3 +1,4 @@
+import { defaultLocalData } from "./defaultLocalStorage";
 import { ChainsStore } from "../stores/chainStore";
 import { DataStore } from "../stores/dataStore";
 import { RequestStore } from "../stores/requestStore";
@@ -34,69 +35,16 @@ routeLoader.snippets = ({ params }) => {
 routeLoader.chain = ({ params }) => {
   const data = JSON.parse(localStorage.getItem('data'));
   const position = getPosition(data.requests, params.id);
-  
+
   if(position === -1) return new ChainsStore(data);
   else return new ChainsStore(data.requests[position]);
 }
 
 routeLoader.soloRequest = ({ params }) => {
   const data = JSON.parse(localStorage.getItem('data'));
-  const testData = {
-    name: "",
-    someIds: 0,
-    url: "",
-    method: "",
-    authorization: {
-      type: "bearer-auth",
-      params: {
-        "no-auth": {
-
-        },
-        "basic-auth": {
-          login: '',
-          password: '',
-        },
-        "bearer-auth": {
-          token: '',
-        }
-      }
-    },
-    headers: [
-      {
-        key: 'User-Agent',
-        value: 'Postwoman/0.0.1',
-        description: ''
-      },
-      {
-        key: 'Accept',
-        value: '*/*',
-        description: ''
-      },
-      {
-        key: 'Accept-Encoding',
-        value: 'gzip, deflate, br',
-        description: ''
-      },
-      {
-        key: 'Connection',
-        value: 'keep-alive',
-        description: ''
-      },
-    ],
-    body: {
-      type: "json",
-      params: {
-        "x-www-form-urlencoded": [
-        ],
-        "json": []
-      },
-      raws: {
-        "json": "",
-      }
-    }
-  }
+  const defaulData = defaultLocalData;
 
   const position = getPosition(data.requests, params.id);
-  if(position === -1) return new RequestStore(testData);
+  if(position === -1) return new RequestStore(defaulData);
   else return new RequestStore(data.requests[position]);
 };

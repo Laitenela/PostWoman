@@ -1,4 +1,7 @@
-const { app, BrowserWindow, session } = require('electron');
+const { app, BrowserWindow, ipcMain, session } = require('electron');
+const spawn = require('child_process').spawn;
+const path = require('node:path');
+const fs = require('fs');
 
 function createWindow(){
   const win = new BrowserWindow({
@@ -10,6 +13,7 @@ function createWindow(){
     webPreferences: {
       webSecurity: false,
       nodeIntegration: true,
+      preload: path.join(__dirname, 'preload.js'),
     },
     titleBarStyle: 'hidden',
     titleBarOverlay: {
@@ -18,6 +22,32 @@ function createWindow(){
       height: 31,
     }
   });
+
+  const filter = {
+    urls: []
+  }
+
+  session.defaultSession.webRequest.onBeforeSendHeaders(filter, (details, callback) => {
+    const headerKeys = Object.keys(details.requestHeaders);
+    for(let headerKey of headerKeys){
+      if(headerKey.slice(0, 3) === "__-"){
+        const normalHeader = headerKey.slice(3, headerKey.length);
+        details.requestHeaders[normalHeader] = details.requestHeaders[headerKey];
+        delete details.requestHeaders[headerKey];
+      }
+    }
+
+    callback({ requestHeaders: details.requestHeaders })
+  })  
+
+  ipcMain.on('save-file', (event, path, data) => {
+    fs.writeFileSync(path, data);
+  })
+
+  ipcMain.on('save-and-open-file-vscode', (event, path, data) => {
+    fs.writeFileSync(path, data);
+    spawn(`code ${path}`, {shell: process.platform == 'win32'});
+  })
 
   win.setMenu(null);
   win.loadURL('http://localhost:5173/');
@@ -48,8 +78,6 @@ function createWindow(){
   //     }
   //   })
   // })
-  
-  
 
   app.on('window-all-closed', () => {
     if (process.platform !== 'darwin') {

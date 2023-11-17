@@ -2,6 +2,7 @@ import { makeAutoObservable, toJS } from "mobx";
 import { Snip } from "./snippetsStore";
 import { v4 as uuidv4 } from 'uuid';
 import { DataStore } from "./dataStore";
+import axios from "axios";
 
 export class RequestStore {
   some = 0;
@@ -65,6 +66,7 @@ export class RequestStore {
   }
 
   setName(newValue){
+    if(newValue.length > 22) return;
     this.name = newValue;
   }
 
@@ -218,6 +220,74 @@ export class RequestStore {
     return -1;
   }
 
+  async sendRequest(event){
+    event.preventDefault();
+    if(this.requestStatus){
+      this.setRequestStatus(false);
+      this.abortController.abort();
+      return;
+    }
+
+    // const content = "File content to save";
+    // const element = document.createElement("a");
+    // const file = new Blob([content], {type: "text/plain"});
+    // element.href = URL.createObjectURL(file);
+    // element.download = "file.txt";
+    // element.click();
+
+    const data = this.getData();
+    const requestOptions = {};
+    const requestHeaders = {};
+    let requestBody;
+
+    for(let item of data.headers){
+      if(!item.enabled) continue;
+      requestHeaders[`__-${item.key}`] = item.value;
+    }
+
+    for(let item of data.immutableHeaders){
+      requestHeaders[`__-${item.key}`] = item.value;
+    }
+
+    if(data.body.type === "x-www-form-urlencoded"){
+      requestBody = new URLSearchParams();
+      for(let item of data.body.params[data.body.type]){
+        if(!item.enabled) continue;
+        requestBody.append(item.key, item.value);
+      }
+    }
+
+    if(data.body.type === "json"){
+      requestBody = data.body.raws.json;
+    }
+
+    requestOptions.method = data.method;
+    requestOptions.url = data.url;
+    requestOptions.headers = requestHeaders;
+    requestOptions.data = requestBody;
+    requestOptions.transformResponse = (data) => data;
+    this.updateAbortController();
+    requestOptions.signal = this.abortController.signal;
+
+    const form = event.target;
+    const button = form.querySelector('.button');
+    button.innerHTML = "Отменить";
+    this.setRequestStatus(true);
+
+    try{
+      const response = await axios(requestOptions);
+      this.setResponse(response);
+    } catch (err) {
+      console.log(err);
+      const response = err.response;
+      const errorResponse = {data: `Code: ${err.code}.\nMessage: ${err.message}.\n\nHas response: ${Boolean(err.response)}\nCode: ${response?.status}\nStatusText: ${response?.statusText}\nData: ${response?.data}`}
+      this.setResponse(errorResponse);
+    }
+
+    this.setRequestStatus(false);
+    button.innerHTML = "Отправить";
+  }
+
   updateAuthorization(){
     const authIndex = this.#findImmutableIndex("Authorization");
 
@@ -265,6 +335,10 @@ export class RequestStore {
     if(this.authorization.type === "bearer-auth"){
       authorizationHeader.changeValue(`Bearer ${this.authorization.params["bearer-auth"].token}`);
     }
+  }
+
+  setBodyToClipboard(){
+    navigator.clipboard.writeText(this.response.mainData);
   }
 }
 
