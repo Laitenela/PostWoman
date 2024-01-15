@@ -33,7 +33,7 @@ label:hover {
   cursor: pointer;
 }
 
-input[type="radio"]:focus {side-menu__text
+input[type="radio"]:focus {
   outline: none;
 }
 
@@ -361,7 +361,6 @@ textarea {
 
 .side-menu {
   position: fixed;
-  display: flex;
   flex-direction: column;
   padding: 0;
   top: 31px;
@@ -373,7 +372,7 @@ textarea {
   transition-delay: 50ms;
   border-right: solid 0.1px black;
   z-index: 9;
-  overflow-y: auto;
+  overflow-y: scroll;
 }
 
 .side-menu:hover {

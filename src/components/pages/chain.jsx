@@ -29,7 +29,6 @@ const Chain = observer(() => {
 
       const positionX = (event.pageX - containerRect.left - startX) / rem;
       const positionY = (event.pageY - containerRect.top - startY) / rem;
-
       const chain = chainsStore.createChain(positionX, positionY);
       chain.pushRequest(dataStore.getRequest(id));
 
@@ -37,11 +36,11 @@ const Chain = observer(() => {
     }
 
     const chainIndex = chainsStore.getChainIndex(id);
-
     if(chainIndex === -1) return;
-
+    
     const chainPositionX = (event.pageX - containerRect.left - startX) / rem;
-    const chainPositionY = (event.pageY - containerRect.left - startY) / rem;
+    const chainPositionY = (event.pageY - containerRect.top - startY) / rem;
+    console.log(chainPositionX, chainPositionY);
 
     chainsStore.setChainPosition(chainIndex, chainPositionX, chainPositionY);
   }
