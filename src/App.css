@@ -1,12 +1,18 @@
+@font-face {
+  font-family: "fonts-Cascadia-code";
+  src: url(/ttf/CascadiaCode.ttf) format("truetype");
+}
+
 html {
-  font-family: Cascadia Code;
+  font-family: "fonts-Cascadia-code";
   margin: 0;
   font-size: calc(0.35vw + 6px);
   overflow-y: scroll;
 }
 
+*,
 *::after {
-  font-family: Cascadia Code;
+  font-family: "fonts-Cascadia-code";
 }
 
 
@@ -96,6 +102,7 @@ header {
 
 header .menu {
   display: flex;
+  padding-left: 70px;
   width: 100%;
   height: 31px;
   z-index: 11;
@@ -397,7 +404,7 @@ textarea {
 .side-menu__text {
   user-select: none;
   overflow: hidden;
-  text-wrap:nowrap;
+  text-wrap: nowrap;
   padding: 10px;
   padding-right: 20px;
 }
@@ -873,18 +880,18 @@ input[type="checkbox"]:disabled {
   text-wrap: nowrap;
 }
 
-.pushed-json-body__container{
+.pushed-json-body__container {
   display: flex;
   padding: 1rem;
   gap: 3rem;
 }
 
-.pushed-json-body__container{
+.pushed-json-body__container {
   position: relative;
   border: solid 1px rgb(133, 133, 133);
 }
 
-.pushed-json-body__button{
+.pushed-json-body__button {
   position: absolute;
   right: 1rem;
   top: 0.75rem;
@@ -892,38 +899,39 @@ input[type="checkbox"]:disabled {
   opacity: 0;
 }
 
-.pushed-json-body__container:hover .pushed-json-body__button{
+.pushed-json-body__container:hover .pushed-json-body__button {
   opacity: 1;
 }
 
-.chains-menu>.save-button{
+.chains-menu>.save-button {
   opacity: 0;
   margin-top: 1rem;
 }
 
-.chains-menu:hover>.save-button{
+.chains-menu:hover>.save-button {
   opacity: 1;
 }
 
-.request-head-title{
+.request-head-title {
   text-align: center;
   display: block;
   position: absolute;
-  top: 0; 
+  top: 0;
   right: -12rem;
 }
 
-.side-span-element{
+.side-span-element {
   font-size: 12px;
   white-space: nowrap;
-  font-weight: 800; 
-  text-align: center; 
-  display: inline-block; 
-  width: 25px; 
-  border-radius: 5px; 
-  padding: 2px 3px; 
+  font-weight: 800;
+  text-align: center;
+  display: inline-block;
+  width: 25px;
+  border-radius: 5px;
+  padding: 2px 3px;
   margin-right: 5px;
 }
+
 
 /* <div className="pushed-json-body json-body">
 {snippetsStore.pushedResponses.map((response, index) => 

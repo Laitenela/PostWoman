@@ -14,6 +14,9 @@ dist-ssr
 
 postwoman-win32-x64
 postwoman-linux-x64
+postwoman-darwin-x64
+postwoman-mas-x64
+postwoman-win32-x64
 
 # Editor directories and files
 .vscode/*

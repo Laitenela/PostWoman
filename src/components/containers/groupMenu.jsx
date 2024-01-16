@@ -15,7 +15,7 @@ const GroupMenu = observer(({ dataStore, name, id, requests }) => {
           </div>
         </div>
       </div>
-      <div style={{maxHeight: isHidden ? `${requests?.length * 35}px` : '0' }} className={`side-menu__context`}>
+      <div style={{maxHeight: isHidden ? '0' : `${requests?.length * 35}px` }} className={`side-menu__context`}>
         {requests?.map((request) => (
           <div draggable onDragStart={(event) => requestDragStart(event, request.type, request.id)} key={request.id} className="side-menu__button request">
             <Link draggable="false" to={request.type === 'requestChains' ? `/chain/${request.id}` : `/soloRequest/${request.id}`}>

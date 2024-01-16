@@ -77,7 +77,7 @@ export class DataStore {
 
   removeGroup(groupId) {
     const globalData = JSON.parse(localStorage.getItem('data'));
-    for (let i = 0; i < globalData.requests.length; i++){
+    for (let i = 0; i < globalData.requests.length; i++) {
       if (globalData.requests[i].groupId !== groupId) continue;
       globalData.requests.splice(i--, 1);
     }
@@ -91,7 +91,7 @@ export class DataStore {
       globalData.groups.splice(currentIndex, 1);
     }
 
-    {
+    if (globalData.groupedRequests) {
       let currentIndex = 0;
       for (let item of globalData.groupedRequests) {
         if (item.id === groupId) break;
@@ -99,7 +99,7 @@ export class DataStore {
       }
       globalData.groupedRequests.splice(currentIndex, 1);
     }
-    
+
     localStorage.setItem('data', JSON.stringify(globalData));
     this.update();
   }
